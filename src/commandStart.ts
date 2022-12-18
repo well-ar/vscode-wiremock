@@ -21,7 +21,7 @@ export async function commandStart() {
     const additionalCommandArgs = (wireMockInstance.getConfiguration<string>(ExtenstionSettingsEnum.additionalCommandArgs) || "").split(" ");
 
     let wireMockParams = [
-        '-jar ', wiremockUri.path, 
+        '-jar ', wiremockUri.fsPath, 
         '--root-dir', wireMockInstance.rootDir.fsPath,
         '--port', wireMockInstance.port.toString(),
     ].concat(additionalCommandArgs);

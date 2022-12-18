@@ -1,0 +1,250 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "This stub mapping's unique identifier"
+        },
+        "uuid": {
+            "type": "string",
+            "description": "Alias for the id"
+        },
+        "name": {
+            "type": "string",
+            "description": "The stub mapping's name"
+        },
+        "request": {
+            "type": "object",
+            "properties": {
+                "method": {
+                    "type": "string",
+                    "description": "The HTTP request method e.g. GET"
+                },
+                "url": {
+                    "type": "string",
+                    "description": "The path and query to match exactly against. Only one of url, urlPattern, urlPath or urlPathPattern may be specified."
+                },
+                "urlPath": {
+                    "type": "string",
+                    "description": "The path to match exactly against. Only one of url, urlPattern, urlPath or urlPathPattern may be specified."
+                },
+                "urlPathPattern": {
+                    "type": "string",
+                    "description": "The path regex to match against. Only one of url, urlPattern, urlPath or urlPathPattern may be specified."
+                },
+                "urlPattern": {
+                    "type": "string",
+                    "description": "The path and query regex to match against. Only one of url, urlPattern, urlPath or urlPathPattern may be specified."
+                },
+                "queryParameters": {
+                    "type": "object",
+                    "description": "Query parameter patterns to match against in the <key>: { \"<predicate>\": \"<value>\" } form"
+                },
+                "headers": {
+                    "type": "object",
+                    "description": "Header patterns to match against in the <key>: { \"<predicate>\": \"<value>\" } form"
+                },
+                "basicAuthCredentials": {
+                    "type": "object",
+                    "description": "Pre-emptive basic auth credentials to match against",
+                    "properties": {
+                        "password": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "username",
+                        "password"
+                    ]
+                },
+                "cookies": {
+                    "type": "object",
+                    "description": "Cookie patterns to match against in the <key>: { \"<predicate>\": \"<value>\" } form"
+                },
+                "bodyPatterns": {
+                    "type": "array",
+                    "description": "Request body patterns to match against in the <key>: { \"<predicate>\": \"<value>\" } form",
+                    "items": {
+                        "type": "object"
+                    }
+                },
+                "customMatcher": {
+                    "type": "object",
+                    "description": "Custom request matcher",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "parameters": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "response": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "integer",
+                    "description": "The HTTP status code to be returned"
+                },
+                "statusMessage": {
+                    "type": "string",
+                    "description": "The HTTP status message to be returned"
+                },
+                "headers": {
+                    "type": "object",
+                    "description": "Map of response headers to send"
+                },
+                "additionalProxyRequestHeaders": {
+                    "type": "object",
+                    "description": "Extra request headers to send when proxying to another host."
+                },
+                "body": {
+                    "type": "string",
+                    "description": "The response body as a string. Only one of body, base64Body, jsonBody or bodyFileName may be specified."
+                },
+                "base64Body": {
+                    "type": "string",
+                    "description": "The response body as a base64 encoded string (useful for binary content). Only one of body, base64Body, jsonBody or bodyFileName may be specified."
+                },
+                "jsonBody": {
+                    "type": "object",
+                    "description": "The response body as a JSON object. Only one of body, base64Body, jsonBody or bodyFileName may be specified."
+                },
+                "bodyFileName": {
+                    "type": "string",
+                    "description": "The path to the file containing the response body, relative to the configured file root. Only one of body, base64Body, jsonBody or bodyFileName may be specified."
+                },
+                "fault": {
+                    "type": "string",
+                    "description": "The fault to apply (instead of a full, valid response).",
+                    "enum": [
+                        "CONNECTION_RESET_BY_PEER",
+                        "EMPTY_RESPONSE",
+                        "MALFORMED_RESPONSE_CHUNK",
+                        "RANDOM_DATA_THEN_CLOSE"
+                    ]
+                },
+                "fixedDelayMilliseconds": {
+                    "type": "integer",
+                    "description": "Number of milliseconds to delay be before sending the response."
+                },
+                "fromConfiguredStub": {
+                    "type": "boolean",
+                    "description": "Read-only flag indicating false if this was the default, unmatched response. Not present otherwise."
+                },
+                "proxyBaseUrl": {
+                    "type": "string",
+                    "description": "The base URL of the target to proxy matching requests to."
+                },
+                "transformerParameters": {
+                    "type": "object",
+                    "description": "Parameters to apply to response transformers."
+                },
+                "transformers": {
+                    "type": "array",
+                    "description": "List of names of transformers to apply to this response.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "delayDistribution": {
+                    "description": "This allows simulation of more specific downstream latencies, such as a long tail.",
+                    "oneOf": [
+                        {
+                            "title": "Log normal",
+                            "description": "A lognormal distribution is a pretty good approximation of long tailed latencies centered on the 50th percentile.",
+                            "type": "object",
+                            "properties": {
+                                "median": {
+                                    "description": "median - The 50th percentile of latencies.",
+                                    "type": "integer"
+                                },
+                                "sigma": {
+                                    "description": "Standard deviation. The larger the value, the longer the tail.",
+                                    "type": "number"
+                                },
+                                "type": {
+                                    "enum": [
+                                        "lognormal"
+                                    ],
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        {
+                            "title": "Uniform",
+                            "description": "A uniform distribution can be used for simulating a stable latency with a fixed amount of jitter.",
+                            "type": "object",
+                            "properties": {
+                                "lower": {
+                                    "description": "Lower bound of the range, inclusive.",
+                                    "type": "integer"
+                                },
+                                "type": {
+                                    "enum": [
+                                        "uniform"
+                                    ],
+                                    "type": "string"
+                                },
+                                "upper": {
+                                    "description": "Upper bound of the range, inclusive.",
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "chunkedDribbleDelay": {
+                    "type": "object",
+                    "description": "In addition to fixed and random delays, you can dribble your response back in chunks. This is useful for simulating a slow network and testing deterministic timeouts.",
+                    "properties": {
+                        "numberOfChunks": {
+                            "type": "number",
+                            "description": "How many chunks you want your response body divided up into."
+                        },
+                        "totalDuration": {
+                            "type": "number",
+                            "description": "The total duration you want the response to take in milliseconds."
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "persistent": {
+        "type": "boolean",
+        "description": "Indicates that the stub mapping should be persisted immediately on create/update/delete and survive resets to default."
+    },
+    "priority": {
+        "type": "integer",
+        "description": "This stub mapping's priority relative to others. 1 is highest.",
+        "minimum": 1
+    },
+    "scenarioName": {
+        "type": "string",
+        "description": "The name of the scenario that this stub mapping is part of"
+    },
+    "requiredScenarioState": {
+        "type": "string",
+        "description": "The required state of the scenario in order for this stub to be matched."
+    },
+    "newScenarioState": {
+        "type": "string",
+        "description": "The new state for the scenario to be updated to after this stub is served."
+    },
+    "postServeActions": {
+        "type": "object",
+        "description": "A map of the names of post serve action extensions to trigger and their parameters."
+    },
+    "metadata": {
+        "type": "object",
+        "description": "Arbitrary metadata to be used for e.g. tagging, documentation. Can also be used to find and remove stubs."
+    }
+}

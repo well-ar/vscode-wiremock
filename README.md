@@ -1,6 +1,6 @@
 # vscode-wiremock
 
-This extension makes it easy to start a WireMock server and create stubbings.
+This extension makes it easy to start a WireMock server and to create stubbings.
 
 ## Features
 
@@ -12,6 +12,11 @@ Commands:
 Auto-reload on changes:
 
 ![console](resources/readme/console.png)
+
+
+JSON Schema validation:
+
+![console](resources/readme/json-schema.png)
 
 ---
 
