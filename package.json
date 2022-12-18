@@ -8,6 +8,10 @@
   "engines": {
     "vscode": "^1.74.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/well-ar/vscode-wiremock"
+  },
   "categories": [
     "Testing",
     "Programming Languages",
