@@ -2,7 +2,7 @@
   "name": "vscode-wiremock",
   "displayName": "WireMock",
   "description": "Makes it easy to start a WireMock server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "well-ar",
   "icon": "resources/icon.png",
   "engines": {
