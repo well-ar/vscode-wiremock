@@ -2,23 +2,25 @@ import * as vscode from 'vscode';
 import { Uri } from "vscode";
 import { getApi, FileDownloader } from "@microsoft/vscode-file-downloader-api";
 import { WireMockInstance } from './WiremockInstance';
+import { ExtensionSettingsEnum } from './ExtensionSettingsEnum';
 import { commandShutdown } from './commandShutdown';
-import { commandReset } from './commandReset';
-import { ExtenstionSettingsEnum } from './ExtensionSettingsEnum';
+import { configureFileWatcher } from './configureFileWatcher';
 
 export async function commandStart() {
     const wireMockInstance = WireMockInstance.getInstance();
+
+    if(wireMockInstance.started){
+        await commandShutdown();
+    }
     
     if(!await loadParams(wireMockInstance)) {
         return;
     }
 
-    await commandShutdown();
-
     const wiremockUri = await getWireMock(wireMockInstance);
     wireMockInstance.outputChannel.show();
     
-    const additionalCommandArgs = (wireMockInstance.getConfiguration<string>(ExtenstionSettingsEnum.additionalCommandArgs) || "").split(" ");
+    const additionalCommandArgs = (wireMockInstance.getConfiguration<string>(ExtensionSettingsEnum.additionalCommandArgs) || "").split(" ");
 
     let wireMockParams = [
         '-jar ', `"${wiremockUri.fsPath}"`, 
@@ -41,15 +43,11 @@ export async function commandStart() {
         if(data && data.indexOf("port:") > -1) {
             const assignedPort = (data + "").match(/\d+/g)?.pop() || "0";
             wireMockInstance.port = parseInt(assignedPort);
+            wireMockInstance.started = true;
             
-            const link = `http://localhost:${wireMockInstance.port}`;
-            vscode.window.showInformationMessage(new vscode.MarkdownString(`WireMock started on: [${link}](${link})`).value);
+            vscode.window.showInformationMessage(new vscode.MarkdownString(`WireMock started on: [${wireMockInstance.wiremockUrl}](${wireMockInstance.wiremockUrl})`).value);
 
-            vscode.workspace.createFileSystemWatcher(wireMockInstance.rootDir.fsPath + "/**")
-                .onDidChange(async () => {
-                    wireMockInstance.outputChannel.appendLine("File changed, resetting...");
-                    await commandReset();
-                });
+            configureFileWatcher();
         }
     });
 }

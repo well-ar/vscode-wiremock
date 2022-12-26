@@ -2,7 +2,7 @@
   "name": "vscode-wiremock",
   "displayName": "WireMock",
   "description": "Makes it easy to start a WireMock server",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "well-ar",
   "icon": "resources/icon.png",
   "engines": {
@@ -26,6 +26,10 @@
   "contributes": {
     "commands": [
       {
+        "command": "vscode-wiremock.attach",
+        "title": "WireMock - Attach"
+      },
+      {
         "command": "vscode-wiremock.start",
         "title": "WireMock - Start"
       },
@@ -36,6 +40,10 @@
       {
         "command": "vscode-wiremock.shutdown",
         "title": "WireMock - Shutdown"
+      },
+      {
+        "command": "vscode-wiremock.requestLogs",
+        "title": "WireMock - Request Logs"
       }
     ],
     "configuration": {
@@ -45,8 +53,27 @@
         "wiremock.additionalCommandArgs": {
           "type": "string",
           "scope": "resource",
-          "default": "",
-          "description": "Additional command arguments"
+          "default": ""
+        },
+        "wiremock.host": {
+          "type": "string",
+          "scope": "resource",
+          "default": "localhost"
+        },
+        "wiremock.port": {
+          "type": "string",
+          "scope": "resource",
+          "default": "8080"
+        },
+        "wiremock.useHttps": {
+          "type": "boolean",
+          "scope": "resource",
+          "default": false
+        },
+        "wiremock.autoReset": {
+          "type": "boolean",
+          "scope": "resource",
+          "default": true
         }
       }
     },
