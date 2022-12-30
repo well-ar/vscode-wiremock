@@ -2,7 +2,7 @@
   "name": "vscode-wiremock",
   "displayName": "WireMock",
   "description": "Makes it easy to start a WireMock server",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "well-ar",
   "icon": "resources/icon.png",
   "engines": {
@@ -44,6 +44,14 @@
       {
         "command": "vscode-wiremock.requestLogs",
         "title": "WireMock - Request Logs"
+      },
+      {
+        "command": "vscode-wiremock.loadMappings",
+        "title": "WireMock - Load Mappings"
+      },
+      {
+        "command": "vscode-wiremock.importMappings",
+        "title": "WireMock - Import Mappings"
       }
     ],
     "configuration": {
@@ -81,6 +89,10 @@
       {
         "fileMatch": "/*/mappings/**/*.json",
         "url": "./resources/wiremock-schema.json"
+      },
+      {
+        "fileMatch": "mappings.json",
+        "url": "./resources/wiremock-import-schema.json"
       }
     ]
   },

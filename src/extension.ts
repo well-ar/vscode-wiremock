@@ -5,6 +5,8 @@ import { commandReset } from './commandReset';
 import { commandShutdown } from './commandShutdown';
 import { commandAttach } from './commandAttach';
 import { commandRequestLogs } from './commandRequestLogs';
+import { commandLoadMappings } from './commandLoadMappings';
+import { commandImportMappings } from './commandImportMappings';
 
 export function activate(context: vscode.ExtensionContext) {
 	const wireMockInstance = WireMockInstance.getInstance(context);
@@ -16,6 +18,8 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('vscode-wiremock.reset', commandReset),
 		vscode.commands.registerCommand('vscode-wiremock.shutdown', commandShutdown),
 		vscode.commands.registerCommand('vscode-wiremock.requestLogs', commandRequestLogs),
+		vscode.commands.registerCommand('vscode-wiremock.loadMappings', commandLoadMappings),
+		vscode.commands.registerCommand('vscode-wiremock.importMappings', commandImportMappings),
 	];
 	
     commands.forEach(command => context.subscriptions.push(command));
