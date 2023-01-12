@@ -43,10 +43,10 @@ export async function commandStart() {
         wireMockInstance.outputChannel.appendLine(data);
         if(data && data.indexOf("port:") > -1) {
             const assignedPort = (data + "").match(/\d+/g)?.pop() || "0";
-            wireMockInstance.port = parseInt(assignedPort);
+            wireMockInstance.address = vscode.Uri.parse(`http://localhost:${assignedPort}`);
             wireMockInstance.started = true;
             
-            vscode.window.showInformationMessage(new vscode.MarkdownString(`WireMock started on: [${wireMockInstance.wiremockUrl}](${wireMockInstance.wiremockUrl})`).value);
+            vscode.window.showInformationMessage(new vscode.MarkdownString(`WireMock started on: [${wireMockInstance.address}](${wireMockInstance.address})`).value);
 
             configureFileWatcher();
         }

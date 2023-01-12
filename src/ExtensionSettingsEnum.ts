@@ -1,7 +1,5 @@
 export enum ExtensionSettingsEnum {
     additionalCommandArgs = 'additionalCommandArgs',
-    host = 'host',
-    port = 'port',
-    useHttps = 'useHttps',
+    address = 'address',
     autoReset = 'autoReset',
 }

@@ -9,7 +9,7 @@ export async function commandShutdown() {
     }
     
     try {
-        await axios.post(wireMockInstance.wiremockUrl + "/__admin/shutdown");
+        await axios.post(wireMockInstance.getApiUrl("__admin/shutdown"));
         wireMockInstance.started = false;
         wireMockInstance.outputChannel.appendLine('Wiremock shutdown');
     } catch (_ex) {

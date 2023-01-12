@@ -4,15 +4,16 @@ import * as vscode from 'vscode';
 import { loadParams } from './loadParams';
 
 export async function commandLoadMappings() {
-    if(!await loadParams(false, true, true)) {
+    if(!await loadParams(false, true)) {
         return;
     }
 
     const wireMockInstance = WireMockInstance.getInstance();
     const fileUri = vscode.Uri.parse(`wiremock:/mappings.json`);
-    const requestsUrl = wireMockInstance.wiremockUrl + "/__admin/mappings";
-    
+    const requestsUrl = wireMockInstance.getApiUrl("__admin/mappings");
+
     let data;
+    wireMockInstance.loadingMappings = true;
   
     try {
         if (vscode.window.activeTextEditor?.document.uri.toString() === fileUri.toString()) {
@@ -24,6 +25,10 @@ export async function commandLoadMappings() {
     } catch (ex) {
         wireMockInstance.memFs.writeFile(fileUri, Buffer.from(`/*\r\nError getting mappings from: ${requestsUrl}\r\n${ex}\r\n*/`), { create: true, overwrite: true });
     }
+    
+    setTimeout(() => {
+        wireMockInstance.loadingMappings = false;
+    }, 1000);
     
     const doc = await vscode.workspace.openTextDocument(fileUri);
     await vscode.languages.setTextDocumentLanguage(doc, "jsonc");

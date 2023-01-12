@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { WireMockInstance } from "./WiremockInstance";
 import { commandReset } from './commandReset';
+import { commandImportMappings } from './commandImportMappings';
 
 export function configureFileWatcher() {
     const wireMockInstance = WireMockInstance.getInstance();
@@ -12,7 +13,7 @@ export function configureFileWatcher() {
     
 
     if (wireMockInstance.autoReset) {
-        const fileWatcher = vscode.workspace.createFileSystemWatcher(wireMockInstance.rootDir.fsPath + "/**");
+        const fileWatcher = vscode.workspace.createFileSystemWatcher(`${wireMockInstance.rootDir.fsPath}/**`);
 
         fileWatcher.onDidChange(async () => {
             fileEventReset("changed");

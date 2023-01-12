@@ -2,7 +2,7 @@
   "name": "vscode-wiremock",
   "displayName": "WireMock",
   "description": "Makes it easy to start a WireMock server",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "publisher": "well-ar",
   "icon": "resources/icon.png",
   "engines": {
@@ -51,7 +51,7 @@
       },
       {
         "command": "vscode-wiremock.importMappings",
-        "title": "WireMock - Import Mappings"
+        "title": "WireMock - Import Mappings JSON (current editor)"
       }
     ],
     "configuration": {
@@ -63,20 +63,10 @@
           "scope": "resource",
           "default": ""
         },
-        "wiremock.host": {
+        "wiremock.address": {
           "type": "string",
           "scope": "resource",
-          "default": "localhost"
-        },
-        "wiremock.port": {
-          "type": "string",
-          "scope": "resource",
-          "default": "8080"
-        },
-        "wiremock.useHttps": {
-          "type": "boolean",
-          "scope": "resource",
-          "default": false
+          "default": "http://localhost:8080"
         },
         "wiremock.autoReset": {
           "type": "boolean",

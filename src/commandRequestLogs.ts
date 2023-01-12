@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 export async function commandRequestLogs() {
     const wireMockInstance = WireMockInstance.getInstance();
     const fileUri = vscode.Uri.parse(`wiremock:/requests.json`);
-    const requestsUrl = wireMockInstance.wiremockUrl + "/__admin/requests";
+    const requestsUrl = wireMockInstance.getApiUrl("__admin/requests");
     
     let data;
   

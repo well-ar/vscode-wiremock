@@ -1,8 +1,12 @@
 import * as vscode from 'vscode';
 import { WireMockInstance } from "./WiremockInstance";
 
-export async function loadParams(promptDir: boolean = true, promptHost: boolean = false, promptPort: boolean = true): Promise<boolean> {
+export async function loadParams(promptDir: boolean = true, promptAddress: boolean = true): Promise<boolean> {
     const wireMockInstance = WireMockInstance.getInstance();
+
+    if(wireMockInstance.started) {
+        return true;
+    }
 
     if(promptDir) {
         let wireMockRootDir = await vscode.window.showOpenDialog({
@@ -19,30 +23,17 @@ export async function loadParams(promptDir: boolean = true, promptHost: boolean 
         wireMockInstance.rootDir = wireMockRootDir[0];
     }
 
-    if(promptHost) {
-        let wiremockHost = await vscode.window.showInputBox({
-            title: "Set wiremock host address",
-            value: wireMockInstance.host,
+    if(promptAddress) {
+        let wiremockAddress = await vscode.window.showInputBox({
+            title: "Set wiremock address",
+            value: wireMockInstance.address.toString(),
         });
 
-        if(!wiremockHost) {
+        if(!wiremockAddress) {
             return false;
         }
         
-        wireMockInstance.host = wiremockHost;
-    }
-
-    if(promptPort) {
-        let wireMockPort = await vscode.window.showInputBox({
-            title: "Set the HTTP port number (default: 8080). Use 0 to dynamically determine a port.",
-            value: wireMockInstance.port.toString(),
-        });
-
-        if(!wireMockPort) {
-            return false;
-        }
-        
-        wireMockInstance.port = wireMockPort ? parseInt(wireMockPort) : wireMockInstance.port;
+        wireMockInstance.address = vscode.Uri.parse(wiremockAddress, true);
     }
 
     return true;

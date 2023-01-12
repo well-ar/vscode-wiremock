@@ -1,8 +1,13 @@
 import axios from 'axios';
 import { WireMockInstance } from './WiremockInstance';
 import * as vscode from 'vscode';
+import { loadParams } from './loadParams';
 
-export async function commandImportMappings() {
+export async function commandImportMappings(prompt: boolean = true) {
+    if(prompt && !await loadParams(false, true)) {
+        return;
+    }
+    
     const wireMockInstance = WireMockInstance.getInstance();
 
     const mappings = vscode.window.activeTextEditor?.document.getText();
@@ -11,12 +16,10 @@ export async function commandImportMappings() {
         return;
     }
 
-    const requestsUrl = wireMockInstance.wiremockUrl + "/__admin/mappings/import";
+    const requestsUrl = wireMockInstance.getApiUrl("__admin/mappings/import");
     
-    let data;
-  
     try {
-        data = await axios.post(requestsUrl, mappings);
+        await axios.post(requestsUrl, mappings);
         wireMockInstance.outputChannel.appendLine("Mappings imported");
     } catch (ex: any) {
         vscode.window.showErrorMessage("Error importing mappings");

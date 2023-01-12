@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { commandImportMappings } from './commandImportMappings';
 import { configureFileWatcher } from './configureFileWatcher';
 import { ExtensionSettingsEnum } from './ExtensionSettingsEnum';
 import { MemFS } from './fileSystemProvider';
@@ -8,6 +9,17 @@ export class WireMockInstance {
 
     constructor(context: vscode.ExtensionContext) {
         this._extensionContext = context;
+
+        this.memFs.onDidChangeFile(async (event) => {
+            if (event[0].uri.path === "/mappings.json" 
+                && event[0].type === vscode.FileChangeType.Changed  
+                && this.autoReset
+                && !this.loadingMappings) {
+                this.outputChannel.appendLine(`Mappings file changed...`);
+                await commandImportMappings(false);
+                vscode.window.showInformationMessage('WireMock reset');
+            }
+        });
     }
 
     public static getInstance(context?: vscode.ExtensionContext): WireMockInstance {
@@ -25,21 +37,18 @@ export class WireMockInstance {
 
     private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel('WireMock', 'log');
     private _extensionContext: vscode.ExtensionContext;
-    private _host: string = "localhost";
-    private _port: number = 8080;
-    private _useHttps: boolean = false;
+    private _address: vscode.Uri = vscode.Uri.parse("http://localhost:8080");
     private _autoReset : boolean = true;
     private _started: boolean = false;
     private _rootDir: vscode.Uri = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri : vscode.Uri.parse(process.cwd());
     private _memFs: vscode.FileSystemProvider = new MemFS();
     private _fileWatcher : vscode.FileSystemWatcher | null = null;
+    private _loadingMappings: boolean = false;
     
     private _extensionSettingsPrefix: string = "wiremock";
 
     private init() {
-        this.host = this.getConfiguration<string>(ExtensionSettingsEnum.host) || "localhost";
-        this.port = this.getConfiguration<number>(ExtensionSettingsEnum.port) || 8080;
-        this.useHttps = this.getConfiguration<boolean>(ExtensionSettingsEnum.useHttps) || false;
+        this.address = this.getConfiguration<vscode.Uri>(ExtensionSettingsEnum.address) || vscode.Uri.parse("http://localhost:8080");;
 
         let reset = this.getConfiguration<boolean>(ExtensionSettingsEnum.autoReset);
         this.autoReset =  reset === undefined ? true : reset;
@@ -57,8 +66,15 @@ export class WireMockInstance {
         await config.update(setting, value);
     }
 
-    public get wiremockUrl(): string {
-        return `${this._useHttps ? "https" : "http"}://${this._host}:${this._port}`;
+    public getApiUrl(api: string): string {
+        return this.address.toString().endsWith("/") ? `${this.address.toString()}${api}` : `${this.address.toString()}/${api}`;
+    }
+
+    public get loadingMappings(): boolean {
+        return this._loadingMappings;
+    }
+    public set loadingMappings(value: boolean) {
+        this._loadingMappings = value;
     }
 
     public get extensionSettingsPrefix(): string {
@@ -93,25 +109,23 @@ export class WireMockInstance {
         this._outputChannel = v;
     }
 
-    public get host(): string {
-        return this._host;
+    public get address(): vscode.Uri {
+        return this._address;
     }
-    public set host(v: string) {
-        this._host = v;
+    public set address(v: vscode.Uri) {
+        this._address = v;
+    }
+
+    public get host(): string {
+        return this._address.authority;
     }
 
     public get port(): number {
-        return this._port;
-    }
-    public set port(v: number) {
-        this._port = v;
+        return parseInt(this._address.authority.split(":")[1]);
     }
 
     public get useHttps(): boolean {
-        return this._useHttps;
-    }
-    public set useHttps(v: boolean) {
-        this._useHttps = v;
+        return this._address.scheme === "https";
     }
 
     public get autoReset() : boolean {
